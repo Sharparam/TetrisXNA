@@ -23,7 +23,7 @@ using Microsoft.Xna.Framework;
 
 namespace TetrisXNA.Tetris
 {
-	class Block
+	public class Block
 	{
 		public Color Color { get; private set; }
 		public Point Position { get; private set; }

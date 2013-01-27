@@ -19,19 +19,18 @@
  * THE SOFTWARE.
  */
 
-using Microsoft.Xna.Framework;
-
-namespace TetrisXNA.Tetris
+namespace TetrisXNA
 {
-	interface IBlockArea
+	public static class Constants
 	{
-		bool IsOccupied(int x, int y);
-		bool IsOccupied(Point point);
+		public const int BlockWidth = 32;
+		public const int BlockHeight = 32;
 
-		Vector2 GridToScreenCoordinates(int x, int y);
-		Vector2 GridToScreenCoordinates(Point point);
-
-		void PlaceAt(Block block, int x, int y);
-		void PlaceAt(Block block, Point point);
+		public const int BlockAreaOffsetY = 0;
+		public const int BlockAreaOffsetX = 32;
+		public const int BlockAreaSizeX = 10;
+		public const int BlockAreaSizeY = 24;
+		public const int BlockAreaWidth = BlockAreaSizeX * BlockWidth;
+		public const int BlockAreaHeight = BlockAreaSizeY * BlockHeight;
 	}
 }

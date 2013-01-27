@@ -82,6 +82,7 @@ namespace TetrisXNA.Tetris
 
 			_blocks = newBlocks;
 			_pivot = newPivot;
+			_facing = newFacing;
 		}
 	}
 }
