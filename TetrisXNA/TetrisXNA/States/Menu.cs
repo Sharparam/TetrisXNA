@@ -29,9 +29,6 @@ namespace TetrisXNA.States
 	class Menu : DrawableGameState
 	{
 		private readonly TetrisClone _game;
-		private readonly GraphicsDevice _graphics;
-		private SpriteBatch _spriteBatch;
-		private ContentManager _content;
 
 		private Texture2D _background;
 
@@ -40,21 +37,12 @@ namespace TetrisXNA.States
 		internal Menu(TetrisClone game)
 		{
 			_game = game;
-			_graphics = _game.GraphicsDevice;
-			_spriteBatch = _game.SpriteBatch;
-			_content = _game.Content;
 		}
 
 		protected override void OnEntered()
 		{
-			if (_spriteBatch == null)
-				_spriteBatch = _game.SpriteBatch;
-
-			if (_content == null)
-				_content = _game.Content;
-
 			if (_background == null)
-				_background = _content.Load<Texture2D>(@"MenuBackground");
+				_background = _game.Content.Load<Texture2D>(@"MenuBackground");
 		}
 
 		protected override void OnLeaving()
