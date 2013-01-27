@@ -38,12 +38,31 @@ namespace TetrisXNA.Tetris
 			_pivot = ShapeBuilder.GetPivotPoint(type);
 		}
 
+		internal bool HasBlockAt(int blockX, int blockY)
+		{
+			for (int x = 0; x < 4; x++)
+				for (int y = 0; y < 4; y++)
+				{
+					if (_blocks[x, y] == null)
+						continue;
+					if (x + Position.X == blockX && y + Position.Y == blockY)
+						return true;
+				}
+			return false;
+		}
+
+		internal bool HasBlockAt(Point point)
+		{
+			return HasBlockAt(point.X, point.Y);
+		}
+
 		internal bool Drop(IBlockArea blockArea)
 		{
 			var newPos = new Point(Position.X, Position.Y + 1);
 			for (int x = 0; x < 4; x++)
 				for (int y = 0; y < 4; y++)
-					if (blockArea.IsOccupied(x + newPos.X, y + newPos.Y) || y + newPos.Y >= Constants.BlockAreaSizeY)
+					if (_blocks[x, y] != null
+						&& (y + newPos.Y >= Constants.BlockAreaSizeY || (blockArea.IsOccupied(x + newPos.X, y + newPos.Y) && !HasBlockAt(x + newPos.X, y + newPos.Y))))
 						return false;
 			Position = new Point(newPos.X, newPos.Y);
 			return true;

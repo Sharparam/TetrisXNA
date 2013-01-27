@@ -49,6 +49,8 @@ namespace TetrisXNA.Tetris
 
 		public bool IsOccupied(int x, int y)
 		{
+			if (x >= Constants.BlockAreaSizeX || y >= Constants.BlockAreaSizeY)
+				return true;
 			return _blocks[x, y] != null;
 		}
 
