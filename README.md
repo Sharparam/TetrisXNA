@@ -16,7 +16,7 @@ F16Gaming/TetrisXNA (TetrisXNA) is licensed under [the MIT License](http://opens
 Credits
 -------
 
-Thanks to [stromcodedotcom](http://www.stromcode.com/2008/03/23/xna-tetris-in-24-hours/) for the article on "XNA Tetris in 24 Hours" with insight on 2D array rotation.
+Thanks to [stromdotcom](http://www.stromcode.com/2008/03/23/xna-tetris-in-24-hours/) for the article on "XNA Tetris in 24 Hours" with insight on 2D array rotation.
 
 Credits to [Parkerman1700](http://parkerman1700.newgrounds.com/) who made the song "Tetris Remix [Final]" (theme.mp3) mentioned in the **License** section.
 
