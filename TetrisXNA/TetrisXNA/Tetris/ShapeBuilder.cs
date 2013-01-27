@@ -33,25 +33,25 @@ namespace TetrisXNA.Tetris
 			switch (type)
 			{
 				case ShapeType.I:
-					result = Color.Yellow;
-					break;
-				case ShapeType.J:
-					result = Color.Red;
-					break;
-				case ShapeType.Z:
-					result = Color.Blue;
-					break;
-				case ShapeType.L:
-					result = Color.Green;
-					break;
-				case ShapeType.S:
 					result = Color.Cyan;
 					break;
+				case ShapeType.J:
+					result = Color.Blue;
+					break;
+				case ShapeType.Z:
+					result = Color.Red;
+					break;
+				case ShapeType.L:
+					result = Color.Orange;
+					break;
+				case ShapeType.S:
+					result = Color.Green;
+					break;
 				case ShapeType.O:
-					result = Color.Purple;
+					result = Color.Yellow;
 					break;
 				case ShapeType.T:
-					result = Color.Pink;
+					result = Color.Purple;
 					break;
 				default:
 					result = Color.White;
@@ -81,25 +81,25 @@ namespace TetrisXNA.Tetris
 					break;
 				case ShapeType.J:
 					/*    0  1  2  3
-					 * 0 [ ][ ][ ][X]
-					 * 1 [ ][ ][ ][X]
-					 * 2 [ ][ ][ ][X]
-					 * 3 [ ][ ][X][X]
+					 * 0 [ ][ ][ ][ ]
+					 * 1 [ ][ ][ ][ ]
+					 * 2 [X][ ][ ][ ]
+					 * 3 [X][X][X][X]
 					 */
 					for (int i = 0; i < 4; i++)
-						result[3, i] = new Block(color);
-					result[2, 3] = new Block(color);
+						result[i, 3] = new Block(color);
+					result[0, 2] = new Block(color);
 					break;
 				case ShapeType.L:
 					/*    0  1  2  3
-					 * 0 [X][ ][ ][ ]
-					 * 1 [X][ ][ ][ ]
-					 * 2 [X][ ][ ][ ]
-					 * 3 [X][X][ ][ ]
+					 * 0 [ ][ ][ ][ ]
+					 * 1 [ ][ ][ ][ ]
+					 * 2 [ ][ ][ ][X]
+					 * 3 [X][X][X][X]
 					 */
 					for (int i = 0; i < 4; i++)
-						result[0, i] = new Block(color);
-					result[1, 3] = new Block(color);
+						result[i, 3] = new Block(color);
+					result[3, 2] = new Block(color);
 					break;
 				case ShapeType.Z:
 					/*    0  1  2  3
@@ -127,27 +127,26 @@ namespace TetrisXNA.Tetris
 					break;
 				case ShapeType.O:
 					/*    0  1  2  3
-					 * 0 [X][X][ ][ ]
-					 * 1 [X][X][ ][ ]
+					 * 0 [ ][X][X][ ]
+					 * 1 [ ][X][X][ ]
 					 * 2 [ ][ ][ ][ ]
 					 * 3 [ ][ ][ ][ ]
 					 */
-					for (int i = 0; i < 1; i++)
-					{
-						result[i, 0] = new Block(color);
-						result[0, i] = new Block(color);
-					}
+					result[1, 0] = new Block(color);
+					result[2, 0] = new Block(color);
+					result[1, 1] = new Block(color);
+					result[2, 1] = new Block(color);
 					break;
 				case ShapeType.T:
 					/*    0  1  2  3
-					 * 0 [X][X][X][ ]
-					 * 1 [ ][X][ ][ ]
-					 * 2 [ ][ ][ ][ ]
-					 * 3 [ ][ ][ ][ ]
+					 * 0 [ ][ ][ ][ ]
+					 * 1 [ ][ ][ ][ ]
+					 * 2 [ ][X][ ][ ]
+					 * 3 [X][X][X][ ]
 					 */
-					for (int i = 0; i < 2; i++)
-						result[i, 0] = new Block(color);
-					result[1, 1] = new Block(color);
+					for (int i = 0; i < 3; i++)
+						result[i, 3] = new Block(color);
+					result[1, 2] = new Block(color);
 					break;
 				default:
 					throw new Exception("Unsupported shape type: " + type);
@@ -180,11 +179,10 @@ namespace TetrisXNA.Tetris
 
 			switch (type)
 			{
-				case ShapeType.J:
-					result = Facing.East;
-					break;
 				case ShapeType.L:
-					result = Facing.West;
+				case ShapeType.J:
+				case ShapeType.T:
+					result = Facing.South;
 					break;
 				default:
 					result = Facing.North;
