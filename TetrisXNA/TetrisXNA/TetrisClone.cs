@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Nuclex.Game.States;
+using TetrisXNA.States;
 
 namespace TetrisXNA
 {
@@ -16,13 +18,25 @@ namespace TetrisXNA
 	/// </summary>
 	public class TetrisClone : Game
 	{
-		GraphicsDeviceManager _graphics;
-		SpriteBatch _spriteBatch;
+		private Menu _menuState;
+
+		internal GraphicsDeviceManager Graphics { get; private set; }
+		internal SpriteBatch SpriteBatch { get; private set; }
+
+		internal GameStateManager StateManager { get; private set; }
 
 		public TetrisClone()
 		{
-			_graphics = new GraphicsDeviceManager(this);
+			Graphics = new GraphicsDeviceManager(this);
+
+			Graphics.PreferredBackBufferWidth = 640;
+			Graphics.PreferredBackBufferHeight = 800;
+
 			Content.RootDirectory = "Content";
+
+			StateManager = new GameStateManager(Services);
+
+			_menuState = new Menu(this);
 		}
 
 		/// <summary>
@@ -33,7 +47,7 @@ namespace TetrisXNA
 		/// </summary>
 		protected override void Initialize()
 		{
-			// TODO: Add your initialization logic here
+			StateManager.Push(_menuState);
 
 			base.Initialize();
 		}
@@ -45,7 +59,7 @@ namespace TetrisXNA
 		protected override void LoadContent()
 		{
 			// Create a new SpriteBatch, which can be used to draw textures.
-			_spriteBatch = new SpriteBatch(GraphicsDevice);
+			SpriteBatch = new SpriteBatch(GraphicsDevice);
 
 			// TODO: use this.Content to load your game content here
 		}
@@ -67,10 +81,10 @@ namespace TetrisXNA
 		protected override void Update(GameTime gameTime)
 		{
 			// Allows the game to exit
-			if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-				this.Exit();
+			if (Keyboard.GetState().IsKeyDown(Keys.Escape))
+				Exit();
 
-			// TODO: Add your update logic here
+			StateManager.Update(gameTime);
 
 			base.Update(gameTime);
 		}
@@ -83,7 +97,11 @@ namespace TetrisXNA
 		{
 			GraphicsDevice.Clear(Color.CornflowerBlue);
 
-			// TODO: Add your drawing code here
+			SpriteBatch.Begin();
+
+			StateManager.Draw(gameTime);
+
+			SpriteBatch.End();
 
 			base.Draw(gameTime);
 		}
