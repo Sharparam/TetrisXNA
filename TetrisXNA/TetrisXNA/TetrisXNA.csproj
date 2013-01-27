@@ -90,6 +90,9 @@
     <Reference Include="mscorlib">
       <Private>False</Private>
     </Reference>
+    <Reference Include="Nuclex.Game">
+      <HintPath>E:\Program Files (x86)\Nuclex Framework\xna-4.0-x86\Nuclex.Game.dll</HintPath>
+    </Reference>
     <Reference Include="System">
       <Private>False</Private>
     </Reference>
@@ -110,6 +113,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="TetrisClone.cs" />
+    <Compile Include="Tetris\Block.cs" />
+    <Compile Include="Tetris\Direction.cs" />
+    <Compile Include="Tetris\Facing.cs" />
+    <Compile Include="Tetris\IBlockArea.cs" />
+    <Compile Include="Tetris\Shape.cs" />
+    <Compile Include="Tetris\ShapeBuilder.cs" />
+    <Compile Include="Tetris\ShapeType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
