@@ -26,18 +26,10 @@ namespace TetrisXNA.Tetris
 	public class Block
 	{
 		public Color Color { get; private set; }
-		public Point Position { get; private set; }
 
-		internal Block(Color color, Point? position = null)
+		internal Block(Color color)
 		{
 			Color = color;
-			if (position.HasValue)
-				Position = new Point(position.Value.X, position.Value.Y);
-		}
-
-		internal void SetPosition(int x, int y)
-		{
-			Position = new Point(x, y);
 		}
 
 		internal void SetColor(Color color)

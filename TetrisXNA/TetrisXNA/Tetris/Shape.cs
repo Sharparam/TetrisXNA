@@ -30,10 +30,23 @@ namespace TetrisXNA.Tetris
 		private Point _pivot;
 		private Facing _facing; // This is probably useless
 
+		internal Point Position { get; private set; }
+
 		internal Shape(ShapeType type)
 		{
 			_blocks = ShapeBuilder.BuildShape(type);
 			_pivot = ShapeBuilder.GetPivotPoint(type);
+		}
+
+		internal bool Drop(IBlockArea blockArea)
+		{
+			var newPos = new Point(Position.X, Position.Y + 1);
+			for (int x = 0; x < 4; x++)
+				for (int y = 0; y < 4; y++)
+					if (blockArea.IsOccupied(x + newPos.X, y + newPos.Y) || y + newPos.Y >= Constants.BlockAreaSizeY)
+						return false;
+			Position = new Point(newPos.X, newPos.Y);
+			return true;
 		}
 
 		// Thanks to stromdotcom for the rotation and pivot algorithms
@@ -83,6 +96,25 @@ namespace TetrisXNA.Tetris
 			_blocks = newBlocks;
 			_pivot = newPivot;
 			_facing = newFacing;
+		}
+
+		internal Block[,] GetBlocks()
+		{
+			var result = new Block[4,4];
+			for (int x = 0; x < 4; x++)
+				for (int y = 0; y < 4; y++)
+					result[x, y] = _blocks[x, y];
+			return result;
+		}
+
+		internal void SetPosition(int x, int y)
+		{
+			Position = new Point(x, y);
+		}
+
+		internal void SetPosition(Point point)
+		{
+			SetPosition(point.X, point.Y);
 		}
 	}
 }

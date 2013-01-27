@@ -33,6 +33,7 @@ namespace TetrisXNA
 	public class TetrisClone : Game
 	{
 		private readonly Menu _menuState;
+		private readonly MainGame _gameState;
 
 		internal GraphicsDeviceManager Graphics { get; private set; }
 		internal SpriteBatch SpriteBatch { get; private set; }
@@ -41,16 +42,14 @@ namespace TetrisXNA
 
 		public TetrisClone()
 		{
-			Graphics = new GraphicsDeviceManager(this);
-
-			Graphics.PreferredBackBufferWidth = 640;
-			Graphics.PreferredBackBufferHeight = 800;
+			Graphics = new GraphicsDeviceManager(this) {PreferredBackBufferWidth = 640, PreferredBackBufferHeight = 800};
 
 			Content.RootDirectory = "Content";
 
 			StateManager = new GameStateManager(Services);
 
 			_menuState = new Menu(this);
+			_gameState = new MainGame(this);
 		}
 
 		/// <summary>
@@ -61,7 +60,7 @@ namespace TetrisXNA
 		/// </summary>
 		protected override void Initialize()
 		{
-			StateManager.Push(_menuState);
+			StateManager.Push(_gameState);
 
 			base.Initialize();
 		}

@@ -19,6 +19,7 @@
  * THE SOFTWARE.
  */
 
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -26,13 +27,24 @@ namespace TetrisXNA.Tetris
 {
 	public class BlockArea : IBlockArea
 	{
+		private const double ShapeMoveDelay = 0.7;
+
 		private readonly Block[,] _blocks;
 		private readonly Texture2D _blockTexture;
+
+		private Shape _currentShape;
+		private Block[,] _currentShapeBlocks;
+		private Shape _nextShape;
+		private Random _random;
+
+		private double _moveTimeElapsed;
 
 		internal BlockArea(Texture2D blockTexture)
 		{
 			_blocks = new Block[Constants.BlockAreaSizeX,Constants.BlockAreaSizeY];
 			_blockTexture = blockTexture;
+			_moveTimeElapsed = 0.0f;
+			_random = new Random();
 		}
 
 		public bool IsOccupied(int x, int y)
@@ -48,7 +60,7 @@ namespace TetrisXNA.Tetris
 		public Vector2 GridToScreenCoordinates(int x, int y)
 		{
 			float screenX = x * Constants.BlockWidth + Constants.BlockAreaOffsetX;
-			float screenY = x * Constants.BlockHeight + Constants.BlockAreaOffsetY;
+			float screenY = y * Constants.BlockHeight + Constants.BlockAreaOffsetY;
 
 			return new Vector2(screenX, screenY);
 		}
@@ -68,17 +80,72 @@ namespace TetrisXNA.Tetris
 			PlaceAt(block, point.X, point.Y);
 		}
 
+		public void RemoveAt(int x, int y)
+		{
+			_blocks[x, y] = null;
+		}
+
+		public void RemoveAt(Point point)
+		{
+			RemoveAt(point.X, point.Y);
+		}
+
+		private Shape GenerateShape()
+		{
+			return new Shape((ShapeType)_random.Next(0, ((int)ShapeType.Z) + 1));
+		}
+
 		public void Update(GameTime gameTime)
 		{
-			
+			if (_currentShape == null)
+			{
+				_currentShape = _nextShape ?? GenerateShape();
+				_currentShapeBlocks = _currentShape.GetBlocks();
+				_nextShape = GenerateShape();
+				_moveTimeElapsed = 0.0;
+			}
+
+			_moveTimeElapsed += gameTime.ElapsedGameTime.TotalSeconds;
+
+			if (!(_moveTimeElapsed >= ShapeMoveDelay))
+				return;
+
+			_moveTimeElapsed -= ShapeMoveDelay;
+			var shapePos = new Point(_currentShape.Position.X, _currentShape.Position.Y);
+			if (_currentShape.Drop(this))
+			{
+				var newShapePos = new Point(_currentShape.Position.X, _currentShape.Position.Y);
+				for (int x = 0; x < 4; x++)
+					for (int y = 0; y < 4; y++)
+					{
+						var block = _currentShapeBlocks[x, y];
+						if (block == null)
+							continue;
+						RemoveAt(x + shapePos.X, y + shapePos.Y);
+						PlaceAt(block, x + newShapePos.X, y + newShapePos.Y);
+					}
+			}
+			else
+			{
+				Console.WriteLine("Collided");
+				for (int x = 0; x < 4; x++)
+					for (int y = 0; y < 4; y++)
+					{
+						var block = _currentShapeBlocks[x, y];
+						if (block == null)
+							continue;
+						PlaceAt(block, x + shapePos.X, y + shapePos.Y);
+					}
+				_currentShape = null;
+			}
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			foreach (var block in _blocks)
-			{
-				spriteBatch.Draw(_blockTexture, GridToScreenCoordinates(block.Position.X, block.Position.Y), block.Color);
-			}
+			for (int x = 0; x < Constants.BlockAreaSizeX; x++)
+				for (int y = 0; y < Constants.BlockAreaSizeY; y++)
+					if (_blocks[x, y] != null)
+						spriteBatch.Draw(_blockTexture, GridToScreenCoordinates(x, y), _blocks[x, y].Color);
 		}
 	}
 }

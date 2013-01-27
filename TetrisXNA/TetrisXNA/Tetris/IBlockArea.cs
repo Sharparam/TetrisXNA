@@ -33,5 +33,8 @@ namespace TetrisXNA.Tetris
 
 		void PlaceAt(Block block, int x, int y);
 		void PlaceAt(Block block, Point point);
+
+		void RemoveAt(int x, int y);
+		void RemoveAt(Point point);
 	}
 }
