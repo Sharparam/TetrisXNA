@@ -32,22 +32,22 @@ namespace TetrisXNA.Tetris
 
 			switch (type)
 			{
-				case ShapeType.Bar:
+				case ShapeType.I:
 					result = Color.Yellow;
 					break;
-				case ShapeType.LeftL:
+				case ShapeType.J:
 					result = Color.Red;
 					break;
-				case ShapeType.LeftZ:
+				case ShapeType.Z:
 					result = Color.Blue;
 					break;
-				case ShapeType.RightL:
+				case ShapeType.L:
 					result = Color.Green;
 					break;
-				case ShapeType.RightZ:
+				case ShapeType.S:
 					result = Color.Cyan;
 					break;
-				case ShapeType.Square:
+				case ShapeType.O:
 					result = Color.Purple;
 					break;
 				case ShapeType.T:
@@ -69,7 +69,7 @@ namespace TetrisXNA.Tetris
 
 			switch (type)
 			{
-				case ShapeType.Bar:
+				case ShapeType.I:
 					/*    0  1  2  3
 					 * 0 [X][X][X][X]
 					 * 1 [ ][ ][ ][ ]
@@ -79,7 +79,7 @@ namespace TetrisXNA.Tetris
 					for (int i = 0; i < 4; i++)
 						result[i, 0] = new Block(color);
 					break;
-				case ShapeType.LeftL:
+				case ShapeType.J:
 					/*    0  1  2  3
 					 * 0 [ ][ ][ ][X]
 					 * 1 [ ][ ][ ][X]
@@ -90,7 +90,7 @@ namespace TetrisXNA.Tetris
 						result[3, i] = new Block(color);
 					result[2, 3] = new Block(color);
 					break;
-				case ShapeType.RightL:
+				case ShapeType.L:
 					/*    0  1  2  3
 					 * 0 [X][ ][ ][ ]
 					 * 1 [X][ ][ ][ ]
@@ -101,7 +101,7 @@ namespace TetrisXNA.Tetris
 						result[0, i] = new Block(color);
 					result[1, 3] = new Block(color);
 					break;
-				case ShapeType.LeftZ:
+				case ShapeType.Z:
 					/*    0  1  2  3
 					 * 0 [X][X][ ][ ]
 					 * 1 [ ][X][X][ ]
@@ -113,7 +113,7 @@ namespace TetrisXNA.Tetris
 					result[1, 1] = new Block(color);
 					result[2, 1] = new Block(color);
 					break;
-				case ShapeType.RightZ:
+				case ShapeType.S:
 					/*    0  1  2  3
 					 * 0 [ ][ ][X][X]
 					 * 1 [ ][X][X][ ]
@@ -125,7 +125,7 @@ namespace TetrisXNA.Tetris
 					result[2, 1] = new Block(color);
 					result[1, 1] = new Block(color);
 					break;
-				case ShapeType.Square:
+				case ShapeType.O:
 					/*    0  1  2  3
 					 * 0 [X][X][ ][ ]
 					 * 1 [X][X][ ][ ]
@@ -162,8 +162,8 @@ namespace TetrisXNA.Tetris
 
 			switch (type)
 			{
-				case ShapeType.LeftL:
-				case ShapeType.RightZ:
+				case ShapeType.J:
+				case ShapeType.S:
 					result = new Point(3, 0);
 					break;
 				default:
@@ -180,10 +180,10 @@ namespace TetrisXNA.Tetris
 
 			switch (type)
 			{
-				case ShapeType.LeftL:
+				case ShapeType.J:
 					result = Facing.East;
 					break;
-				case ShapeType.RightL:
+				case ShapeType.L:
 					result = Facing.West;
 					break;
 				default:

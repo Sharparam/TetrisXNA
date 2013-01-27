@@ -23,12 +23,12 @@ namespace TetrisXNA.Tetris
 {
 	enum ShapeType
 	{
-		Bar,
+		I,
+		J,
+		L,
+		O,
+		S,
 		T,
-		LeftL,
-		RightL,
-		LeftZ,
-		RightZ,
-		Square
+		Z
 	}
 }
