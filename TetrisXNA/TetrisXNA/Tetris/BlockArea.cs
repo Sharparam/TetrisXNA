@@ -39,6 +39,7 @@ namespace TetrisXNA.Tetris
 		private Random _random;
 
 		private double _moveTimeElapsed;
+		private bool _gameOver;
 
 		internal BlockArea(Texture2D blockTexture)
 		{
@@ -48,10 +49,16 @@ namespace TetrisXNA.Tetris
 			_random = new Random();
 		}
 
+		public bool IsOutOfRange(int x, int y)
+		{
+			return x < 0 || x >= Constants.BlockAreaSizeX || y < 0 || y >= Constants.BlockAreaSizeY;
+		}
+
 		public bool IsOccupied(int x, int y)
 		{
-			if (x >= Constants.BlockAreaSizeX || y >= Constants.BlockAreaSizeY)
+			if (IsOutOfRange(x, y))
 				return true;
+
 			return _blocks[x, y] != null;
 		}
 
@@ -75,6 +82,9 @@ namespace TetrisXNA.Tetris
 
 		public void PlaceAt(Block block, int x, int y)
 		{
+			if (IsOutOfRange(x, y))
+				return;
+
 			_blocks[x, y] = block;
 		}
 
@@ -85,6 +95,9 @@ namespace TetrisXNA.Tetris
 
 		public void RemoveAt(int x, int y)
 		{
+			if (IsOutOfRange(x, y))
+				return;
+
 			_blocks[x, y] = null;
 		}
 
@@ -95,11 +108,26 @@ namespace TetrisXNA.Tetris
 
 		private Shape GenerateShape()
 		{
-			return new Shape((ShapeType)_random.Next(0, ((int)ShapeType.Z) + 1));
+			var shape = new Shape((ShapeType)_random.Next(0, ((int)ShapeType.Z) + 1));
+			int xOffset = 0;
+			switch (shape.Type)
+			{
+				case ShapeType.S:
+					xOffset = -3;
+					break;
+				default:
+					xOffset = -2;
+					break;
+			}
+			shape.SetPosition(Constants.BlockAreaSizeX / 2 + xOffset, 0 - shape.Pivot.Y);
+			return shape;
 		}
 
 		public void Update(GameTime gameTime)
 		{
+			if (_gameOver)
+				return;
+
 			if (_currentShape == null)
 			{
 				_currentShape = _nextShape ?? GenerateShape();
@@ -115,6 +143,9 @@ namespace TetrisXNA.Tetris
 			}
 			else if (InputHandler.KeyPressed(Keys.Left))
 				_currentShape.Move(Direction.Left, this);
+			else if (InputHandler.KeyPressed(Keys.Up))
+				if (_currentShape.Rotate(Direction.Right, this))
+					_currentShapeBlocks = _currentShape.GetBlocks();
 
 			_moveTimeElapsed += gameTime.ElapsedGameTime.TotalSeconds;
 
@@ -137,6 +168,10 @@ namespace TetrisXNA.Tetris
 					}
 				_currentShape = null;
 			}
+
+			for (int x = 0; x < Constants.BlockAreaSizeX; x++)
+				if (_blocks[x, 0] != null)
+					_gameOver = true;
 		}
 
 		public void Draw(SpriteBatch spriteBatch)

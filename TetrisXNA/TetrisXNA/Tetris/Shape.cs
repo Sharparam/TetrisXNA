@@ -28,33 +28,17 @@ namespace TetrisXNA.Tetris
 	class Shape
 	{
 		private Block[,] _blocks;
-		private Point _pivot;
 		private Facing _facing; // This is probably useless
 
+		internal ShapeType Type { get; private set; }
 		internal Point Position { get; private set; }
+		internal Point Pivot { get; private set; }
 
 		internal Shape(ShapeType type)
 		{
+			Type = type;
 			_blocks = ShapeBuilder.BuildShape(type);
-			_pivot = ShapeBuilder.GetPivotPoint(type);
-		}
-
-		internal bool HasBlockAt(int blockX, int blockY)
-		{
-			for (int x = 0; x < 4; x++)
-				for (int y = 0; y < 4; y++)
-				{
-					if (_blocks[x, y] == null)
-						continue;
-					if (x + Position.X == blockX && y + Position.Y == blockY)
-						return true;
-				}
-			return false;
-		}
-
-		internal bool HasBlockAt(Point point)
-		{
-			return HasBlockAt(point.X, point.Y);
+			Pivot = ShapeBuilder.GetPivotPoint(type);
 		}
 
 		internal bool Move(Direction direction, IBlockArea blockArea)
@@ -87,10 +71,13 @@ namespace TetrisXNA.Tetris
 
 		// Thanks to stromdotcom for the rotation and pivot algorithms
 		// http://www.stromcode.com/2008/03/23/xna-tetris-in-24-hours/
-		internal void Rotate(Direction direction, IBlockArea blockArea)
+		internal bool Rotate(Direction direction, IBlockArea blockArea)
 		{
 			if (direction != Direction.Right && direction != Direction.Left)
 				throw new ArgumentException("Only left and right directions are supported", "direction");
+
+			if (Position.Y < 0)
+				return false;
 
 			var newBlocks = new Block[4,4];
 			Point newPivot;
@@ -98,11 +85,9 @@ namespace TetrisXNA.Tetris
 
 			if (direction == Direction.Left)
 			{
-				// Swap block (x,y) with block (y, x - 3);
-				for (int x = 0; x < 3; x++)
-					for (int y = 0; y < 3; y++)
-						newBlocks[x, y] = _blocks[y, x - 3];
-				newPivot = new Point(_pivot.Y, 3 - _pivot.X);
+				throw new NotImplementedException();
+
+				newPivot = new Point(Pivot.Y, 3 - Pivot.X);
 
 				newFacing = _facing - 1;
 				if (newFacing == Facing.Min)
@@ -110,29 +95,32 @@ namespace TetrisXNA.Tetris
 			}
 			else // direction == Direction.Right
 			{
-				// Swap block (x,y) with block (3-y,x)
-				for (int x = 0; x < 3; x++)
-					for (int y = 0; y < 3; y++)
-						newBlocks[x, y] = _blocks[3 - y, x];
-				newPivot = new Point(3 - _pivot.Y, _pivot.X);
+				for (int x = 0; x < 4; ++x)
+					for (int y = 0; y < 4; y++)
+						newBlocks[x, y] = _blocks[4 - y - 1, x];
+
+				newPivot = new Point(3 - Pivot.Y, Pivot.X);
 
 				newFacing = _facing + 1;
 				if (newFacing == Facing.Max)
 					newFacing = Facing.North;
 			}
 
-			var pivotShift = new Point(_pivot.X - newPivot.X, _pivot.Y - newPivot.Y);
+			var pivotShift = new Point(Pivot.X - newPivot.X, Pivot.Y - newPivot.Y);
 
-			for (int x = 0; x < 3; x++)
-				for (int y = 0; y < 3; y++)
-					if (newBlocks[x, y] != null && blockArea.IsOccupied(x, y))
-						return;
+			for (int x = 0; x < 4; x++)
+				for (int y = 0; y < 4; y++)
+					if (newBlocks[x, y] != null && blockArea.IsOccupied(x + Position.X, y + Position.Y))
+						return false;
 
 			// Somewhere here the new position of each block needs to be set
+			// disregard above, BlockArea class should handle this
 
 			_blocks = newBlocks;
-			_pivot = newPivot;
+			Pivot = newPivot;
 			_facing = newFacing;
+
+			return true;
 		}
 
 		internal Block[,] GetBlocks()

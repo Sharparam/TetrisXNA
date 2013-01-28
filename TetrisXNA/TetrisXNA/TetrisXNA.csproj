@@ -91,10 +91,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Nuclex.Game">
-      <HintPath>..\..\..\..\..\..\Program Files\Nuclex Framework\xna-4.0-x86\Nuclex.Game.dll</HintPath>
+      <HintPath>$(NUCLEX_PATH)\Nuclex.Game.dll</HintPath>
     </Reference>
     <Reference Include="Nuclex.Input">
-      <HintPath>..\..\..\..\..\..\Program Files\Nuclex Framework\xna-4.0-x86\Nuclex.Input.dll</HintPath>
+      <HintPath>$(NUCLEX_PATH)\Nuclex.Input.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>False</Private>

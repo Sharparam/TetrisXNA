@@ -162,8 +162,15 @@ namespace TetrisXNA.Tetris
 			switch (type)
 			{
 				case ShapeType.J:
+				case ShapeType.L:
+				case ShapeType.T:
+					result = new Point(0, 3);
+					break;
 				case ShapeType.S:
 					result = new Point(3, 0);
+					break;
+				case ShapeType.O:
+					result = new Point(1, 0);
 					break;
 				default:
 					result = new Point(0, 0);
@@ -189,6 +196,26 @@ namespace TetrisXNA.Tetris
 					break;
 			}
 
+			return result;
+		}
+
+		internal static int GetShapeWidth(ShapeType type)
+		{
+			int result;
+			switch (type)
+			{
+				case ShapeType.I:
+				case ShapeType.J:
+				case ShapeType.L:
+					result = 4;
+					break;
+				case ShapeType.O:
+					result = 2;
+					break;
+				default:
+					result = 3;
+					break;
+			}
 			return result;
 		}
 	}
