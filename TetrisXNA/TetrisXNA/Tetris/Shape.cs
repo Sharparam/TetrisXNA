@@ -19,6 +19,7 @@
  * THE SOFTWARE.
  */
 
+using System;
 using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
@@ -56,13 +57,29 @@ namespace TetrisXNA.Tetris
 			return HasBlockAt(point.X, point.Y);
 		}
 
+		internal bool Move(Direction direction, IBlockArea blockArea)
+		{
+			if (direction != Direction.Right && direction != Direction.Left)
+				throw new ArgumentException("Only left and right directions are supported", "direction");
+
+			int shift = direction == Direction.Right ? 1 : -1;
+			var newPos = new Point(Position.X + shift, Position.Y);
+			for (int x = 0; x < 4; x++)
+				for (int y = 0; y < 4; y++)
+					if (_blocks[x, y] != null &&
+					    (x + newPos.X >= Constants.BlockAreaSizeX || x + newPos.X < 0 || blockArea.IsOccupied(x + newPos.X, y + newPos.Y)))
+						return false;
+			Position = new Point(newPos.X, newPos.Y);
+			return true;
+		}
+
 		internal bool Drop(IBlockArea blockArea)
 		{
 			var newPos = new Point(Position.X, Position.Y + 1);
 			for (int x = 0; x < 4; x++)
 				for (int y = 0; y < 4; y++)
-					if (_blocks[x, y] != null
-						&& (y + newPos.Y >= Constants.BlockAreaSizeY || (blockArea.IsOccupied(x + newPos.X, y + newPos.Y) && !HasBlockAt(x + newPos.X, y + newPos.Y))))
+					if (_blocks[x, y] != null &&
+						(y + newPos.Y >= Constants.BlockAreaSizeY || blockArea.IsOccupied(x + newPos.X, y + newPos.Y)))
 						return false;
 			Position = new Point(newPos.X, newPos.Y);
 			return true;
@@ -72,7 +89,8 @@ namespace TetrisXNA.Tetris
 		// http://www.stromcode.com/2008/03/23/xna-tetris-in-24-hours/
 		internal void Rotate(Direction direction, IBlockArea blockArea)
 		{
-			Debug.Assert(direction != Direction.Up && direction != Direction.Down, "Direction can only be right or left");
+			if (direction != Direction.Right && direction != Direction.Left)
+				throw new ArgumentException("Only left and right directions are supported", "direction");
 
 			var newBlocks = new Block[4,4];
 			Point newPivot;

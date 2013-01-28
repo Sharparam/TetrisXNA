@@ -91,7 +91,10 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="Nuclex.Game">
-      <HintPath>E:\Program Files (x86)\Nuclex Framework\xna-4.0-x86\Nuclex.Game.dll</HintPath>
+      <HintPath>..\..\..\..\..\..\Program Files\Nuclex Framework\xna-4.0-x86\Nuclex.Game.dll</HintPath>
+    </Reference>
+    <Reference Include="Nuclex.Input">
+      <HintPath>..\..\..\..\..\..\Program Files\Nuclex Framework\xna-4.0-x86\Nuclex.Input.dll</HintPath>
     </Reference>
     <Reference Include="System">
       <Private>False</Private>
@@ -111,6 +114,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.cs" />
+    <Compile Include="InputHandler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="States\MainGame.cs" />

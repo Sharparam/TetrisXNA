@@ -22,6 +22,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 
 namespace TetrisXNA.Tetris
 {
@@ -107,29 +108,25 @@ namespace TetrisXNA.Tetris
 				_moveTimeElapsed = 0.0;
 			}
 
+			if (InputHandler.KeyPressed(Keys.Right))
+			{
+				Console.WriteLine("moving shape to the right");
+				_currentShape.Move(Direction.Right, this);
+			}
+			else if (InputHandler.KeyPressed(Keys.Left))
+				_currentShape.Move(Direction.Left, this);
+
 			_moveTimeElapsed += gameTime.ElapsedGameTime.TotalSeconds;
 
-			if (!(_moveTimeElapsed >= ShapeMoveDelay))
+			if (!(_moveTimeElapsed >= ShapeMoveDelay) && !InputHandler.KeyDown(Keys.Down))
 				return;
-
-			_moveTimeElapsed -= ShapeMoveDelay;
+			
+			if (_moveTimeElapsed >= ShapeMoveDelay)
+				_moveTimeElapsed -= ShapeMoveDelay;
+			
 			var shapePos = new Point(_currentShape.Position.X, _currentShape.Position.Y);
-			if (_currentShape.Drop(this))
+			if (!_currentShape.Drop(this))
 			{
-				var newShapePos = new Point(_currentShape.Position.X, _currentShape.Position.Y);
-				for (int x = 0; x < 4; x++)
-					for (int y = 0; y < 4; y++)
-					{
-						var block = _currentShapeBlocks[x, y];
-						if (block == null)
-							continue;
-						RemoveAt(x + shapePos.X, y + shapePos.Y);
-						PlaceAt(block, x + newShapePos.X, y + newShapePos.Y);
-					}
-			}
-			else
-			{
-				Console.WriteLine("Collided");
 				for (int x = 0; x < 4; x++)
 					for (int y = 0; y < 4; y++)
 					{
@@ -144,10 +141,20 @@ namespace TetrisXNA.Tetris
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
+			// Draw the fixed blocks
 			for (int x = 0; x < Constants.BlockAreaSizeX; x++)
 				for (int y = 0; y < Constants.BlockAreaSizeY; y++)
 					if (_blocks[x, y] != null)
 						spriteBatch.Draw(_blockTexture, GridToScreenCoordinates(x, y), _blocks[x, y].Color);
+
+			// Draw the active shape
+			if (_currentShape == null)
+				return;
+
+			for (int x = 0; x < 4; x++)
+				for (int y = 0; y < 4; y++)
+					if (_currentShapeBlocks[x, y] != null)
+						spriteBatch.Draw(_blockTexture, GridToScreenCoordinates(x + _currentShape.Position.X, y + _currentShape.Position.Y), _currentShapeBlocks[x, y].Color);
 		}
 	}
 }

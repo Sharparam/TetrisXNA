@@ -50,6 +50,8 @@ namespace TetrisXNA
 
 			_menuState = new Menu(this);
 			_gameState = new MainGame(this);
+
+			Components.Add(new InputHandler(this));
 		}
 
 		/// <summary>
