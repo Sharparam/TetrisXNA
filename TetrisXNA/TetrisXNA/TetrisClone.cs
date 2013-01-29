@@ -20,7 +20,6 @@
  */
 
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Nuclex.Game.States;
@@ -33,10 +32,6 @@ namespace TetrisXNA
 	/// </summary>
 	public class TetrisClone : Game
 	{
-		private AudioEngine _audioEngine;
-		internal SoundBank SoundBank { get; private set; }
-		private WaveBank _waveBank;
-
 		internal GraphicsDeviceManager Graphics { get; private set; }
 		internal SpriteBatch SpriteBatch { get; private set; }
 
@@ -68,12 +63,6 @@ namespace TetrisXNA
 		protected override void Initialize()
 		{
 			base.Initialize();
-
-			_audioEngine = new AudioEngine(@"Content\XACT\TetrisXNA_XACT.xgs");
-			SoundBank = new SoundBank(_audioEngine, @"Content\XACT\Sound Bank.xsb");
-			_waveBank = new WaveBank(_audioEngine, @"Content\XACT\Wave Bank.xwb", 0, 4);
-
-			_audioEngine.Update();
 		}
 
 		/// <summary>
