@@ -63,8 +63,7 @@ namespace TetrisXNA.States
 
 			_statsOverlay = new StatsOverlay(0, _game.GameFont);
 
-			if (_themeCue == null)
-				_themeCue = _game.SoundBank.GetCue("theme");
+			_themeCue = _game.SoundBank.GetCue("theme");
 			_themeCue.Play();
 		}
 
