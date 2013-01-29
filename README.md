@@ -3,6 +3,12 @@ TetrisXNA
 
 Made in C#/XNA by Adam Hellberg.
 
+Building
+--------
+
+Please note that you **must** build the XACT project before building the XNA project.
+The XACT project is located in the same directory as the solution file, named **TetrisXNA_XACT.xap**.
+
 License
 -------
 

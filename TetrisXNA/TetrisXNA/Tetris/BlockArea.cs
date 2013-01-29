@@ -21,6 +21,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -136,6 +137,7 @@ namespace TetrisXNA.Tetris
 
 		private Shape GenerateShape()
 		{
+			Console.WriteLine("GenerateShape call");
 			var shape = new Shape((ShapeType)_random.Next(0, ((int)ShapeType.Z) + 1));
 			int xOffset = -2;
 			if (shape.Type == ShapeType.O)

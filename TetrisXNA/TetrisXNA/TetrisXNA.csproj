@@ -173,6 +173,10 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>IF NOT EXIST $(TargetDir)Content\XACT (mkdir $(TargetDir)Content\XACT)
+xcopy /Q /Y $(SolutionDir)Win\*.* $(TargetDir)Content\XACT\</PostBuildEvent>
+  </PropertyGroup>
   <!--
       To modify your build process, add your task inside one of the targets below and uncomment it. 
       Other similar extension points exist, see Microsoft.Common.targets.

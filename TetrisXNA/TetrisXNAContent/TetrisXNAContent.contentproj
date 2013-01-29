@@ -66,13 +66,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="theme.mp3">
-      <Name>theme</Name>
-      <Importer>Mp3Importer</Importer>
-      <Processor>SongProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="QuartzMS.spritefont">
       <Name>QuartzMS</Name>
       <Importer>FontDescriptionImporter</Importer>

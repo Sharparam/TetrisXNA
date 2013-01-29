@@ -179,8 +179,10 @@ namespace TetrisXNA.Tetris
 			{
 				case ShapeType.J:
 				case ShapeType.L:
-				case ShapeType.T:
 					result = new Point(0, 3);
+					break;
+				case ShapeType.T:
+					result = new Point(0, 2);
 					break;
 				case ShapeType.S:
 					result = new Point(3, 0);
