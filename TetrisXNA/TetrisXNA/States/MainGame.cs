@@ -23,6 +23,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using Nuclex.Game.States;
 using TetrisXNA.Components;
 using TetrisXNA.Tetris;
@@ -41,7 +42,7 @@ namespace TetrisXNA.States
 		private BlockArea _blockArea;
 		private StatsOverlay _statsOverlay;
 
-		private Cue _themeCue;
+		private Song _theme;
 
 		internal MainGame(TetrisClone game)
 		{
@@ -63,8 +64,10 @@ namespace TetrisXNA.States
 
 			_statsOverlay = new StatsOverlay(0, _game.GameFont);
 
-			_themeCue = _game.SoundBank.GetCue("theme");
-			_themeCue.Play();
+			if (_theme == null)
+				_theme = _game.Content.Load<Song>(@"theme");
+			MediaPlayer.IsRepeating = true;
+			MediaPlayer.Play(_theme);
 		}
 
 		protected override void OnLeaving()
@@ -73,7 +76,7 @@ namespace TetrisXNA.States
 			_blockArea.LineCleared -= OnLineClear;
 			_blockArea.GameOver -= OnGameOver;
 
-			_themeCue.Stop(AudioStopOptions.Immediate);
+			MediaPlayer.Stop();
 		}
 
 		public override void Update(GameTime gameTime)

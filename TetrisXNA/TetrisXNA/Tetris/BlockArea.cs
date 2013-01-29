@@ -137,7 +137,6 @@ namespace TetrisXNA.Tetris
 
 		private Shape GenerateShape()
 		{
-			Console.WriteLine("GenerateShape call");
 			var shape = new Shape((ShapeType)_random.Next(0, ((int)ShapeType.Z) + 1));
 			int xOffset = -2;
 			if (shape.Type == ShapeType.O)
@@ -161,10 +160,7 @@ namespace TetrisXNA.Tetris
 			}
 
 			if (InputHandler.KeyPressed(Keys.Right))
-			{
-				Console.WriteLine("moving shape to the right");
 				_currentShape.Move(Direction.Right, this);
-			}
 			else if (InputHandler.KeyPressed(Keys.Left))
 				_currentShape.Move(Direction.Left, this);
 			else if (InputHandler.KeyPressed(Keys.Up))
