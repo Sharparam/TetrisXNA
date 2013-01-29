@@ -24,6 +24,7 @@ using System.Globalization;
 using System.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Nuclex.Game.States;
 using TetrisXNA.Components;
@@ -37,11 +38,15 @@ namespace TetrisXNA.States
 
 		private Texture2D _background;
 		private Texture2D _blockTexture;
+		private Texture2D _gameOverOverlay;
 
 		private readonly Vector2 _bgPos = new Vector2(0.0f, 0.0f);
+		private readonly Vector2 _gameOverPos = new Vector2(32.0f, 0.0f);
 
 		private BlockArea _blockArea;
 		private StatsOverlay _statsOverlay;
+
+		private bool _gameOver;
 
 		internal MainGame(TetrisClone game)
 		{
@@ -55,6 +60,9 @@ namespace TetrisXNA.States
 
 			if (_blockTexture == null)
 				_blockTexture = _game.Content.Load<Texture2D>(@"block");
+
+			if (_gameOverOverlay == null)
+				_gameOverOverlay = _game.Content.Load<Texture2D>(@"GameOverBackground");
 
 			_blockArea = new BlockArea(_blockTexture);
 			_blockArea.UserDrop += OnUserDrop;
@@ -87,6 +95,13 @@ namespace TetrisXNA.States
 
 		public override void Update(GameTime gameTime)
 		{
+			if (_gameOver)
+			{
+				if (InputHandler.KeyPressed(Keys.Enter))
+					_game.StateManager.Switch(_game.MenuState);
+				return;
+			}
+
 			_blockArea.Update(gameTime);
 			_statsOverlay.Update(gameTime);
 		}
@@ -96,6 +111,9 @@ namespace TetrisXNA.States
 			_game.SpriteBatch.Draw(_background, _bgPos, Color.White);
 			_blockArea.Draw(_game.SpriteBatch);
 			_statsOverlay.Draw(_game.SpriteBatch);
+
+			if (_gameOver)
+				_game.SpriteBatch.Draw(_gameOverOverlay, _gameOverPos, Color.White);
 		}
 
 		private void OnUserDrop(object sender, EventArgs e)
@@ -111,8 +129,7 @@ namespace TetrisXNA.States
 
 		private void OnGameOver(object sender, EventArgs e)
 		{
-			_game.GameOverState.SetScore(_statsOverlay.Score);
-			_game.StateManager.Switch(_game.GameOverState);
+			_gameOver = true;
 		}
 	}
 }

@@ -42,7 +42,6 @@ namespace TetrisXNA
 
 		internal Menu MenuState;
 		internal MainGame GameState;
-		internal GameOver GameOverState;
 
 		internal SpriteFont GameFont { get; private set; }
 
@@ -86,9 +85,8 @@ namespace TetrisXNA
 
 			MenuState = new Menu(this);
 			GameState = new MainGame(this);
-			GameOverState = new GameOver(this);
 
-			StateManager.Push(MenuState);
+			StateManager.Switch(MenuState);
 		}
 
 		/// <summary>
