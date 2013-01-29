@@ -128,6 +128,13 @@ namespace TetrisXNA
 			base.Update(gameTime);
 		}
 
+		protected override void Dispose(bool disposing)
+		{
+			_inputManager.Dispose();
+
+			base.Dispose(disposing);
+		}
+
 		#endregion
 
 		#region Methods
