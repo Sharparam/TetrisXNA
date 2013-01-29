@@ -27,30 +27,40 @@ namespace TetrisXNA.Components
 {
 	internal class StatsOverlay
 	{
-		private const string TimeFormat = "{0}m {1}s";
+		private const string TimeFormat = "{0:00}m {1:00}s";
+		private const string LevelFormat = "{0:000}";
 		private const string ScoreFormat = "{0:0000000}";
 
 		private TimeSpan _time;
 
 		private readonly SpriteFont _font;
 		private readonly Vector2 _timePosition;
+		private readonly Vector2 _levelPosition;
 		private readonly Vector2 _scorePosition;
 		private readonly Vector2 _highScorePosition;
 		private readonly Color _textColor = Color.Black;
 
+		internal int Level { get; private set; }
 		internal int Score { get; private set; }
 		internal int HighScore { get; private set; }
 
 		internal StatsOverlay(int highScore, SpriteFont font)
 		{
+			Level = 0;
 			Score = 0;
 			HighScore = highScore;
 			_time = new TimeSpan(0);
 			_font = font;
 
 			_timePosition = new Vector2(Constants.StatsOffsetX, Constants.StatsTimeOffsetY);
+			_levelPosition = new Vector2(Constants.StatsOffsetX + Constants.StatsLevelOffsetX, Constants.StatsLevelOffsetY);
 			_scorePosition = new Vector2(Constants.StatsOffsetX, Constants.StatsScoreOffsetY);
 			_highScorePosition = new Vector2(Constants.StatsOffsetX, Constants.StatsHighScoreOffsetY);
+		}
+
+		internal void AddLevel(int levels)
+		{
+			Level += levels;
 		}
 
 		internal void AddScore(int score)
@@ -72,7 +82,8 @@ namespace TetrisXNA.Components
 
 		public void Draw(SpriteBatch spriteBatch)
 		{
-			spriteBatch.DrawString(_font, string.Format(TimeFormat, Math.Floor(_time.TotalMinutes), Math.Floor(_time.TotalSeconds)), _timePosition, _textColor);
+			spriteBatch.DrawString(_font, string.Format(TimeFormat, Math.Floor(_time.TotalMinutes), _time.Seconds), _timePosition, _textColor);
+			spriteBatch.DrawString(_font, string.Format(LevelFormat, Level), _levelPosition, _textColor);
 			spriteBatch.DrawString(_font, string.Format(ScoreFormat, Score), _scorePosition, _textColor);
 			spriteBatch.DrawString(_font, string.Format(ScoreFormat, HighScore), _highScorePosition, _textColor);
 		}

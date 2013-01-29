@@ -27,19 +27,16 @@ namespace TetrisXNA.Tetris
 	class Shape
 	{
 		private Block[,] _blocks;
-		private Facing _facing; // This is probably useless
 
 		internal int Size { get; private set; }
 		internal ShapeType Type { get; private set; }
 		internal Point Position { get; private set; }
-		internal Point Pivot { get; private set; }
 
 		internal Shape(ShapeType type)
 		{
 			Type = type;
 			_blocks = ShapeBuilder.BuildShape(type);
 			Size = ShapeBuilder.GetShapeSize(type);
-			Pivot = ShapeBuilder.GetPivotPoint(type);
 		}
 
 		internal bool Move(Direction direction, IBlockArea blockArea)
@@ -80,47 +77,22 @@ namespace TetrisXNA.Tetris
 				return false;
 
 			var newBlocks = new Block[Size,Size];
-			Point newPivot;
-			Facing newFacing;
 
 			if (direction == Direction.Left)
-			{
 				for (int x = 0; x < Size; ++x)
 					for (int y = 0; y < Size; y++)
 						newBlocks[x, y] = _blocks[Size - y - 1, x];
-
-				newPivot = new Point(Pivot.Y, Size - Pivot.X);
-
-				newFacing = _facing - 1;
-				if (newFacing == Facing.Min)
-					newFacing = Facing.West;
-			}
 			else // direction == Direction.Right
-			{
 				for (int x = 0; x < Size; ++x)
 					for (int y = 0; y < Size; y++)
-						newBlocks[x, y] = _blocks[y, Size - x - 1]; //_blocks[Size - y - 1, x];
-
-				newPivot = new Point(Size - Pivot.Y, Pivot.X);
-
-				newFacing = _facing + 1;
-				if (newFacing == Facing.Max)
-					newFacing = Facing.North;
-			}
-
-			var pivotShift = new Point(Pivot.X - newPivot.X, Pivot.Y - newPivot.Y);
+						newBlocks[x, y] = _blocks[y, Size - x - 1];
 
 			for (int x = 0; x < Size; x++)
 				for (int y = 0; y < Size; y++)
 					if (newBlocks[x, y] != null && blockArea.IsOccupied(x + Position.X, y + Position.Y))
 						return false;
 
-			// Somewhere here the new position of each block needs to be set
-			// disregard above, BlockArea class should handle this
-
 			_blocks = newBlocks;
-			Pivot = newPivot;
-			_facing = newFacing;
 
 			return true;
 		}

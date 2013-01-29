@@ -22,6 +22,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using Nuclex.Game.States;
 using TetrisXNA.States;
 
@@ -32,6 +33,8 @@ namespace TetrisXNA
 	/// </summary>
 	public class TetrisClone : Game
 	{
+		private Song _theme;
+
 		internal GraphicsDeviceManager Graphics { get; private set; }
 		internal SpriteBatch SpriteBatch { get; private set; }
 
@@ -75,6 +78,11 @@ namespace TetrisXNA
 			SpriteBatch = new SpriteBatch(GraphicsDevice);
 
 			GameFont = Content.Load<SpriteFont>(@"QuartzMS");
+
+			_theme = Content.Load<Song>(@"theme");
+
+			MediaPlayer.IsRepeating = true;
+			MediaPlayer.Play(_theme);
 
 			MenuState = new Menu(this);
 			GameState = new MainGame(this);

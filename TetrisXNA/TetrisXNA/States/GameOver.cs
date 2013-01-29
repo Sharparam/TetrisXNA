@@ -22,6 +22,7 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using Nuclex.Game.States;
 
 namespace TetrisXNA.States
@@ -55,6 +56,8 @@ namespace TetrisXNA.States
 		{
 			if (_background == null)
 				_background = _game.Content.Load<Texture2D>(@"GameOverBackground");
+
+			MediaPlayer.Volume = 0.1f;
 		}
 
 		protected override void OnLeaving()

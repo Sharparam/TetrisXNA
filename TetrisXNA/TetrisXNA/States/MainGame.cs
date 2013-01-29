@@ -20,8 +20,9 @@
  */
 
 using System;
+using System.Globalization;
+using System.IO;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
 using Nuclex.Game.States;
@@ -42,8 +43,6 @@ namespace TetrisXNA.States
 		private BlockArea _blockArea;
 		private StatsOverlay _statsOverlay;
 
-		private Song _theme;
-
 		internal MainGame(TetrisClone game)
 		{
 			_game = game;
@@ -62,12 +61,19 @@ namespace TetrisXNA.States
 			_blockArea.LineCleared += OnLineClear;
 			_blockArea.GameOver += OnGameOver;
 
-			_statsOverlay = new StatsOverlay(0, _game.GameFont);
+			int highScore = 0;
+			if (File.Exists("highscore"))
+			{
+				var fileContent = File.ReadAllText("highscore");
+				int savedHighScore;
+				bool valid = int.TryParse(fileContent, out savedHighScore);
+				if (valid)
+					highScore = savedHighScore;
+			}
 
-			if (_theme == null)
-				_theme = _game.Content.Load<Song>(@"theme");
-			MediaPlayer.IsRepeating = true;
-			MediaPlayer.Play(_theme);
+			_statsOverlay = new StatsOverlay(highScore, _game.GameFont);
+
+			MediaPlayer.Volume = 0.5f;
 		}
 
 		protected override void OnLeaving()
@@ -76,7 +82,7 @@ namespace TetrisXNA.States
 			_blockArea.LineCleared -= OnLineClear;
 			_blockArea.GameOver -= OnGameOver;
 
-			MediaPlayer.Stop();
+			File.WriteAllText("highscore", _statsOverlay.HighScore.ToString(CultureInfo.InvariantCulture));
 		}
 
 		public override void Update(GameTime gameTime)
@@ -100,6 +106,7 @@ namespace TetrisXNA.States
 		private void OnLineClear(object sender, EventArgs e)
 		{
 			_statsOverlay.AddScore(Constants.LineClearPoints);
+			_statsOverlay.AddLevel(1);
 		}
 
 		private void OnGameOver(object sender, EventArgs e)

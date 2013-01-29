@@ -21,7 +21,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -36,6 +35,9 @@ namespace TetrisXNA.Tetris
 		public event GameOverEventHandler GameOver;
 
 		private const double ShapeMoveDelay = 0.7;
+		private const double ShapeMoveDelayModStep = 0.005;
+
+		private double _shapeMoveDelayMod = 0.0;
 
 		private readonly Block[,] _blocks;
 		private readonly Texture2D _blockTexture;
@@ -44,7 +46,10 @@ namespace TetrisXNA.Tetris
 		private Block[,] _currentShapeBlocks;
 		private Shape _nextShape;
 		private Block[,] _nextShapeBlocks;
-		private Random _random;
+		private readonly Random _random;
+
+		private readonly int[] _shapeTypes;
+		private int _shapeTypeIndex;
 
 		private double _moveTimeElapsed;
 		private bool _gameOver;
@@ -55,6 +60,8 @@ namespace TetrisXNA.Tetris
 			_blockTexture = blockTexture;
 			_moveTimeElapsed = 0.0f;
 			_random = new Random();
+			_shapeTypes = new[] {0, 1, 2, 3, 4, 5, 6};
+			ShuffleShapeTypes();
 		}
 
 		private void OnUserDrop()
@@ -135,13 +142,31 @@ namespace TetrisXNA.Tetris
 			RemoveAt(point.X, point.Y);
 		}
 
+		private void ShuffleShapeTypes()
+		{
+			for (int i = 0; i < _shapeTypes.Length; i++)
+			{
+				var n = _random.Next(0, _shapeTypes.Length);
+				var old = _shapeTypes[i];
+				_shapeTypes[i] = _shapeTypes[n];
+				_shapeTypes[n] = old;
+			}
+		}
+
 		private Shape GenerateShape()
 		{
-			var shape = new Shape((ShapeType)_random.Next(0, ((int)ShapeType.Z) + 1));
+			if (_shapeTypeIndex == _shapeTypes.Length)
+			{
+				_shapeTypeIndex = 0;
+				ShuffleShapeTypes();
+			}
+
+			var shapeNum = _shapeTypes[_shapeTypeIndex++];
+			var shape = new Shape((ShapeType) shapeNum);
 			int xOffset = -2;
 			if (shape.Type == ShapeType.O)
 				xOffset = -1;
-			shape.SetPosition(Constants.BlockAreaSizeX / 2 + xOffset, 0 - shape.Pivot.Y);
+			shape.SetPosition(Constants.BlockAreaSizeX / 2 + xOffset, -1);
 			return shape;
 		}
 
@@ -171,11 +196,11 @@ namespace TetrisXNA.Tetris
 
 			var userDrop = InputHandler.KeyDown(Keys.Down);
 
-			if (!(_moveTimeElapsed >= ShapeMoveDelay) && !userDrop)
+			if (!(_moveTimeElapsed >= ShapeMoveDelay + _shapeMoveDelayMod) && !userDrop)
 				return;
 			
-			if (_moveTimeElapsed >= ShapeMoveDelay)
-				_moveTimeElapsed -= ShapeMoveDelay;
+			if (_moveTimeElapsed >= ShapeMoveDelay + _shapeMoveDelayMod)
+				_moveTimeElapsed -= ShapeMoveDelay + _shapeMoveDelayMod;
 			
 			var shapePos = new Point(_currentShape.Position.X, _currentShape.Position.Y);
 			if (!_currentShape.Drop(this))
@@ -219,6 +244,7 @@ namespace TetrisXNA.Tetris
 							RemoveAt(x, y);
 						}
 
+				_shapeMoveDelayMod -= ShapeMoveDelayModStep;
 				OnLineCleared();
 			}
 
@@ -253,7 +279,7 @@ namespace TetrisXNA.Tetris
 					for (int y = 0; y < _nextShape.Size; y++)
 						if (_nextShapeBlocks[x, y] != null)
 							spriteBatch.Draw(_blockTexture,
-								GridToScreenCoordinates(x + Constants.BlockAreaNextFieldX, y + Constants.BlockAreaNextFieldY - (_nextShape.Type == ShapeType.T ? 1 : _nextShape.Pivot.Y)),
+								GridToScreenCoordinates(x + Constants.BlockAreaNextFieldX, y + Constants.BlockAreaNextFieldY),
 								_nextShapeBlocks[x, y].Color);
 		}
 	}
