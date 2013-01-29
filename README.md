@@ -6,8 +6,8 @@ Made in C#/XNA by Adam Hellberg.
 Building
 --------
 
-Please note that you **must** build the XACT project before building the XNA project.
-The XACT project is located in the same directory as the solution file, named **TetrisXNA_XACT.xap**.
+In order for the project to find the Nuclex Framework files, please set up the environment variable NUCLEX_PATH to point to the directory containing all the Nuclex Framework files.
+(Usually %ProgramFiles%\Nuclex Framework\xna-4.0-x86\)
 
 License
 -------
