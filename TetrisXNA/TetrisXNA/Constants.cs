@@ -35,9 +35,9 @@ namespace TetrisXNA
 		public const int BlockAreaNextFieldX = 13;
 		public const int BlockAreaNextFieldY = 3;
 
-		public const int StatsOffsetX = 430;
+		public const int StatsOffsetX = 425;
 		public const int StatsTimeOffsetY = 274;
-		public const int StatsLevelOffsetX = 35;
+		public const int StatsLevelOffsetX = 40;
 		public const int StatsLevelOffsetY = 370;
 		public const int StatsScoreOffsetY = 465;
 		public const int StatsHighScoreOffsetY = 560;
