@@ -82,6 +82,8 @@ namespace TetrisXNA.States
 			_statsOverlay = new StatsOverlay(highScore, _game.GameFont);
 
 			MediaPlayer.Volume = 0.5f;
+
+			_gameOver = false;
 		}
 
 		protected override void OnLeaving()
