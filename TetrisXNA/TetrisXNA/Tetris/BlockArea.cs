@@ -37,7 +37,7 @@ namespace TetrisXNA.Tetris
 		private const double ShapeMoveDelay = 0.7;
 		private const double ShapeMoveDelayModStep = 0.005;
 
-		private double _shapeMoveDelayMod = 0.0;
+		private double _shapeMoveDelayMod;
 
 		private readonly Block[,] _blocks;
 		private readonly Texture2D _blockTexture;
