@@ -20,7 +20,6 @@
  */
 
 using System;
-using System.Diagnostics;
 using Microsoft.Xna.Framework;
 
 namespace TetrisXNA.Tetris
@@ -30,6 +29,7 @@ namespace TetrisXNA.Tetris
 		private Block[,] _blocks;
 		private Facing _facing; // This is probably useless
 
+		internal int Size { get; private set; }
 		internal ShapeType Type { get; private set; }
 		internal Point Position { get; private set; }
 		internal Point Pivot { get; private set; }
@@ -38,6 +38,7 @@ namespace TetrisXNA.Tetris
 		{
 			Type = type;
 			_blocks = ShapeBuilder.BuildShape(type);
+			Size = ShapeBuilder.GetShapeSize(type);
 			Pivot = ShapeBuilder.GetPivotPoint(type);
 		}
 
@@ -48,8 +49,8 @@ namespace TetrisXNA.Tetris
 
 			int shift = direction == Direction.Right ? 1 : -1;
 			var newPos = new Point(Position.X + shift, Position.Y);
-			for (int x = 0; x < 4; x++)
-				for (int y = 0; y < 4; y++)
+			for (int x = 0; x < Size; x++)
+				for (int y = 0; y < Size; y++)
 					if (_blocks[x, y] != null &&
 					    (x + newPos.X >= Constants.BlockAreaSizeX || x + newPos.X < 0 || blockArea.IsOccupied(x + newPos.X, y + newPos.Y)))
 						return false;
@@ -60,8 +61,8 @@ namespace TetrisXNA.Tetris
 		internal bool Drop(IBlockArea blockArea)
 		{
 			var newPos = new Point(Position.X, Position.Y + 1);
-			for (int x = 0; x < 4; x++)
-				for (int y = 0; y < 4; y++)
+			for (int x = 0; x < Size; x++)
+				for (int y = 0; y < Size; y++)
 					if (_blocks[x, y] != null &&
 						(y + newPos.Y >= Constants.BlockAreaSizeY || blockArea.IsOccupied(x + newPos.X, y + newPos.Y)))
 						return false;
@@ -69,8 +70,7 @@ namespace TetrisXNA.Tetris
 			return true;
 		}
 
-		// Thanks to stromdotcom for the rotation and pivot algorithms
-		// http://www.stromcode.com/2008/03/23/xna-tetris-in-24-hours/
+		// Rotation algorithm from Stackoverflow
 		internal bool Rotate(Direction direction, IBlockArea blockArea)
 		{
 			if (direction != Direction.Right && direction != Direction.Left)
@@ -79,15 +79,17 @@ namespace TetrisXNA.Tetris
 			if (Position.Y < 0)
 				return false;
 
-			var newBlocks = new Block[4,4];
+			var newBlocks = new Block[Size,Size];
 			Point newPivot;
 			Facing newFacing;
 
 			if (direction == Direction.Left)
 			{
-				throw new NotImplementedException();
+				for (int x = 0; x < Size; ++x)
+					for (int y = 0; y < Size; y++)
+						newBlocks[x, y] = _blocks[Size - y - 1, x];
 
-				newPivot = new Point(Pivot.Y, 3 - Pivot.X);
+				newPivot = new Point(Pivot.Y, Size - Pivot.X);
 
 				newFacing = _facing - 1;
 				if (newFacing == Facing.Min)
@@ -95,11 +97,11 @@ namespace TetrisXNA.Tetris
 			}
 			else // direction == Direction.Right
 			{
-				for (int x = 0; x < 4; ++x)
-					for (int y = 0; y < 4; y++)
-						newBlocks[x, y] = _blocks[4 - y - 1, x];
+				for (int x = 0; x < Size; ++x)
+					for (int y = 0; y < Size; y++)
+						newBlocks[x, y] = _blocks[y, Size - x - 1]; //_blocks[Size - y - 1, x];
 
-				newPivot = new Point(3 - Pivot.Y, Pivot.X);
+				newPivot = new Point(Size - Pivot.Y, Pivot.X);
 
 				newFacing = _facing + 1;
 				if (newFacing == Facing.Max)
@@ -108,8 +110,8 @@ namespace TetrisXNA.Tetris
 
 			var pivotShift = new Point(Pivot.X - newPivot.X, Pivot.Y - newPivot.Y);
 
-			for (int x = 0; x < 4; x++)
-				for (int y = 0; y < 4; y++)
+			for (int x = 0; x < Size; x++)
+				for (int y = 0; y < Size; y++)
 					if (newBlocks[x, y] != null && blockArea.IsOccupied(x + Position.X, y + Position.Y))
 						return false;
 
@@ -125,9 +127,9 @@ namespace TetrisXNA.Tetris
 
 		internal Block[,] GetBlocks()
 		{
-			var result = new Block[4,4];
-			for (int x = 0; x < 4; x++)
-				for (int y = 0; y < 4; y++)
+			var result = new Block[Size,Size];
+			for (int x = 0; x < Size; x++)
+				for (int y = 0; y < Size; y++)
 					result[x, y] = _blocks[x, y];
 			return result;
 		}

@@ -19,27 +19,9 @@
  * THE SOFTWARE.
  */
 
-using Microsoft.Xna.Framework;
-using TetrisXNA.Tetris.Events;
+using System;
 
-namespace TetrisXNA.Tetris
+namespace TetrisXNA.Tetris.Events
 {
-	interface IBlockArea
-	{
-		event UserDropEventHandler UserDrop;
-		event LineClearedEventHandler LineCleared;
-		event GameOverEventHandler GameOver;
-
-		bool IsOccupied(int x, int y);
-		bool IsOccupied(Point point);
-
-		Vector2 GridToScreenCoordinates(int x, int y);
-		Vector2 GridToScreenCoordinates(Point point);
-
-		void PlaceAt(Block block, int x, int y);
-		void PlaceAt(Block block, Point point);
-
-		void RemoveAt(int x, int y);
-		void RemoveAt(Point point);
-	}
+	public delegate void GameOverEventHandler(object sender, EventArgs e);
 }

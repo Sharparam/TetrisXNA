@@ -21,6 +21,7 @@
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Nuclex.Game.States;
 
 namespace TetrisXNA.States
@@ -56,7 +57,8 @@ namespace TetrisXNA.States
 
 		public override void Update(GameTime gameTime)
 		{
-			
+			if (InputHandler.KeyPressed(Keys.Enter))
+				_game.StateManager.Switch(_game.GameState);
 		}
 	}
 }

@@ -32,13 +32,16 @@ namespace TetrisXNA
 	/// </summary>
 	public class TetrisClone : Game
 	{
-		private readonly Menu _menuState;
-		private readonly MainGame _gameState;
-
 		internal GraphicsDeviceManager Graphics { get; private set; }
 		internal SpriteBatch SpriteBatch { get; private set; }
 
 		internal GameStateManager StateManager { get; private set; }
+
+		internal Menu MenuState;
+		internal MainGame GameState;
+		internal GameOver GameOverState;
+
+		internal SpriteFont GameFont { get; private set; }
 
 		public TetrisClone()
 		{
@@ -47,9 +50,6 @@ namespace TetrisXNA
 			Content.RootDirectory = "Content";
 
 			StateManager = new GameStateManager(Services);
-
-			_menuState = new Menu(this);
-			_gameState = new MainGame(this);
 
 			Components.Add(new InputHandler(this));
 		}
@@ -62,8 +62,6 @@ namespace TetrisXNA
 		/// </summary>
 		protected override void Initialize()
 		{
-			StateManager.Push(_gameState);
-
 			base.Initialize();
 		}
 
@@ -76,7 +74,13 @@ namespace TetrisXNA
 			// Create a new SpriteBatch, which can be used to draw textures.
 			SpriteBatch = new SpriteBatch(GraphicsDevice);
 
-			// TODO: use this.Content to load your game content here
+			GameFont = Content.Load<SpriteFont>(@"QuartzMS");
+
+			MenuState = new Menu(this);
+			GameState = new MainGame(this);
+			GameOverState = new GameOver(this);
+
+			StateManager.Push(MenuState);
 		}
 
 		/// <summary>

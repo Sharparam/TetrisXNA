@@ -20,14 +20,20 @@
  */
 
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using TetrisXNA.Tetris.Events;
 
 namespace TetrisXNA.Tetris
 {
 	public class BlockArea : IBlockArea
 	{
+		public event UserDropEventHandler UserDrop;
+		public event LineClearedEventHandler LineCleared;
+		public event GameOverEventHandler GameOver;
+
 		private const double ShapeMoveDelay = 0.7;
 
 		private readonly Block[,] _blocks;
@@ -36,6 +42,7 @@ namespace TetrisXNA.Tetris
 		private Shape _currentShape;
 		private Block[,] _currentShapeBlocks;
 		private Shape _nextShape;
+		private Block[,] _nextShapeBlocks;
 		private Random _random;
 
 		private double _moveTimeElapsed;
@@ -47,6 +54,27 @@ namespace TetrisXNA.Tetris
 			_blockTexture = blockTexture;
 			_moveTimeElapsed = 0.0f;
 			_random = new Random();
+		}
+
+		private void OnUserDrop()
+		{
+			var func = UserDrop;
+			if (func != null)
+				func(this, null);
+		}
+
+		private void OnLineCleared()
+		{
+			var func = LineCleared;
+			if (func != null)
+				func(this, null);
+		}
+
+		private void OnGameOver()
+		{
+			var func = GameOver;
+			if (func != null)
+				func(this, null);
 		}
 
 		public bool IsOutOfRange(int x, int y)
@@ -109,16 +137,9 @@ namespace TetrisXNA.Tetris
 		private Shape GenerateShape()
 		{
 			var shape = new Shape((ShapeType)_random.Next(0, ((int)ShapeType.Z) + 1));
-			int xOffset = 0;
-			switch (shape.Type)
-			{
-				case ShapeType.S:
-					xOffset = -3;
-					break;
-				default:
-					xOffset = -2;
-					break;
-			}
+			int xOffset = -2;
+			if (shape.Type == ShapeType.O)
+				xOffset = -1;
 			shape.SetPosition(Constants.BlockAreaSizeX / 2 + xOffset, 0 - shape.Pivot.Y);
 			return shape;
 		}
@@ -133,6 +154,7 @@ namespace TetrisXNA.Tetris
 				_currentShape = _nextShape ?? GenerateShape();
 				_currentShapeBlocks = _currentShape.GetBlocks();
 				_nextShape = GenerateShape();
+				_nextShapeBlocks = _nextShape.GetBlocks();
 				_moveTimeElapsed = 0.0;
 			}
 
@@ -149,7 +171,9 @@ namespace TetrisXNA.Tetris
 
 			_moveTimeElapsed += gameTime.ElapsedGameTime.TotalSeconds;
 
-			if (!(_moveTimeElapsed >= ShapeMoveDelay) && !InputHandler.KeyDown(Keys.Down))
+			var userDrop = InputHandler.KeyDown(Keys.Down);
+
+			if (!(_moveTimeElapsed >= ShapeMoveDelay) && !userDrop)
 				return;
 			
 			if (_moveTimeElapsed >= ShapeMoveDelay)
@@ -158,8 +182,8 @@ namespace TetrisXNA.Tetris
 			var shapePos = new Point(_currentShape.Position.X, _currentShape.Position.Y);
 			if (!_currentShape.Drop(this))
 			{
-				for (int x = 0; x < 4; x++)
-					for (int y = 0; y < 4; y++)
+				for (int x = 0; x < _currentShape.Size; x++)
+					for (int y = 0; y < _currentShape.Size; y++)
 					{
 						var block = _currentShapeBlocks[x, y];
 						if (block == null)
@@ -168,10 +192,44 @@ namespace TetrisXNA.Tetris
 					}
 				_currentShape = null;
 			}
+			else if (userDrop)
+				OnUserDrop();
+
+			// Check for filled rows
+			var rows = new Queue<int>(); // Queue: first-in -> first-out
+			// Loop through all rows, top to bottom, adding any full rows to the queue
+			for (int y = 0; y < Constants.BlockAreaSizeY; y++)
+				for (int x = 0; x < Constants.BlockAreaSizeX; x++)
+				{
+					if (_blocks[x, y] == null)
+						break;
+					if (x == Constants.BlockAreaSizeX - 1)
+						rows.Enqueue(y);
+				}
+			
+			while (rows.Count > 0)
+			{
+				var row = rows.Dequeue();
+				for (int x = 0; x < Constants.BlockAreaSizeX; x++)
+					RemoveAt(x, row);
+
+				for (int y = row - 1; y > 0; y--)
+					for (int x = 0; x < Constants.BlockAreaSizeX; x++)
+						if (_blocks[x, y] != null)
+						{
+							PlaceAt(_blocks[x, y], x, y + 1);
+							RemoveAt(x, y);
+						}
+
+				OnLineCleared();
+			}
 
 			for (int x = 0; x < Constants.BlockAreaSizeX; x++)
 				if (_blocks[x, 0] != null)
+				{
 					_gameOver = true;
+					OnGameOver();
+				}
 		}
 
 		public void Draw(SpriteBatch spriteBatch)
@@ -183,13 +241,22 @@ namespace TetrisXNA.Tetris
 						spriteBatch.Draw(_blockTexture, GridToScreenCoordinates(x, y), _blocks[x, y].Color);
 
 			// Draw the active shape
-			if (_currentShape == null)
-				return;
-
-			for (int x = 0; x < 4; x++)
-				for (int y = 0; y < 4; y++)
-					if (_currentShapeBlocks[x, y] != null)
-						spriteBatch.Draw(_blockTexture, GridToScreenCoordinates(x + _currentShape.Position.X, y + _currentShape.Position.Y), _currentShapeBlocks[x, y].Color);
+			if (_currentShape != null && _nextShapeBlocks != null)
+				for (int x = 0; x < _currentShape.Size; x++)
+					for (int y = 0; y < _currentShape.Size; y++)
+						if (_currentShapeBlocks[x, y] != null)
+							spriteBatch.Draw(_blockTexture,
+								GridToScreenCoordinates(x + _currentShape.Position.X, y + _currentShape.Position.Y),
+								_currentShapeBlocks[x, y].Color);
+			
+			// Draw the next shape in the upper right
+			if (_nextShape != null && _nextShapeBlocks != null)
+				for (int x = 0; x < _nextShape.Size; x++)
+					for (int y = 0; y < _nextShape.Size; y++)
+						if (_nextShapeBlocks[x, y] != null)
+							spriteBatch.Draw(_blockTexture,
+								GridToScreenCoordinates(x + Constants.BlockAreaNextFieldX, y + Constants.BlockAreaNextFieldY - (_nextShape.Type == ShapeType.T ? 1 : _nextShape.Pivot.Y)),
+								_nextShapeBlocks[x, y].Color);
 		}
 	}
 }

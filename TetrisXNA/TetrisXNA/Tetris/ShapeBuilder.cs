@@ -63,7 +63,8 @@ namespace TetrisXNA.Tetris
 
 		internal static Block[,] BuildShape(ShapeType type)
 		{
-			var result = new Block[4,4];
+			var size = GetShapeSize(type);
+			var result = new Block[size,size];
 
 			var color = GetShapeColor(type);
 
@@ -102,11 +103,10 @@ namespace TetrisXNA.Tetris
 					result[3, 2] = new Block(color);
 					break;
 				case ShapeType.Z:
-					/*    0  1  2  3
-					 * 0 [X][X][ ][ ]
-					 * 1 [ ][X][X][ ]
-					 * 2 [ ][ ][ ][ ]
-					 * 3 [ ][ ][ ][ ]
+					/*    0  1  2
+					 * 0 [X][X][ ]
+					 * 1 [ ][X][X]
+					 * 2 [ ][ ][ ]
 					 */
 					result[0, 0] = new Block(color);
 					result[1, 0] = new Block(color);
@@ -114,44 +114,60 @@ namespace TetrisXNA.Tetris
 					result[2, 1] = new Block(color);
 					break;
 				case ShapeType.S:
-					/*    0  1  2  3
-					 * 0 [ ][ ][X][X]
-					 * 1 [ ][X][X][ ]
-					 * 2 [ ][ ][ ][ ]
-					 * 3 [ ][ ][ ][ ]
-					 */
-					result[3, 0] = new Block(color);
-					result[2, 0] = new Block(color);
-					result[2, 1] = new Block(color);
-					result[1, 1] = new Block(color);
-					break;
-				case ShapeType.O:
-					/*    0  1  2  3
-					 * 0 [ ][X][X][ ]
-					 * 1 [ ][X][X][ ]
-					 * 2 [ ][ ][ ][ ]
-					 * 3 [ ][ ][ ][ ]
+					/*    0  1  2
+					 * 0 [ ][X][X]
+					 * 1 [X][X][ ]
+					 * 2 [ ][ ][ ]
 					 */
 					result[1, 0] = new Block(color);
 					result[2, 0] = new Block(color);
+					result[0, 1] = new Block(color);
 					result[1, 1] = new Block(color);
-					result[2, 1] = new Block(color);
+					break;
+				case ShapeType.O:
+					/*    0  1
+					 * 0 [X][X]
+					 * 1 [X][X]
+					 */
+					result[0, 0] = new Block(color);
+					result[1, 0] = new Block(color);
+					result[0, 1] = new Block(color);
+					result[1, 1] = new Block(color);
 					break;
 				case ShapeType.T:
-					/*    0  1  2  3
-					 * 0 [ ][ ][ ][ ]
-					 * 1 [ ][ ][ ][ ]
-					 * 2 [ ][X][ ][ ]
-					 * 3 [X][X][X][ ]
+					/*    0  1  2
+					 * 0 [ ][ ][ ]
+					 * 1 [ ][X][ ]
+					 * 2 [X][X][X]
 					 */
 					for (int i = 0; i < 3; i++)
-						result[i, 3] = new Block(color);
-					result[1, 2] = new Block(color);
+						result[i, 2] = new Block(color);
+					result[1, 1] = new Block(color);
 					break;
 				default:
 					throw new Exception("Unsupported shape type: " + type);
 			}
 			
+			return result;
+		}
+
+		internal static int GetShapeSize(ShapeType type)
+		{
+			int result;
+			switch (type)
+			{
+				case ShapeType.I:
+				case ShapeType.J:
+				case ShapeType.L:
+					result = 4;
+					break;
+				case ShapeType.O:
+					result = 2;
+					break;
+				default:
+					result = 3;
+					break;
+			}
 			return result;
 		}
 
@@ -196,26 +212,6 @@ namespace TetrisXNA.Tetris
 					break;
 			}
 
-			return result;
-		}
-
-		internal static int GetShapeWidth(ShapeType type)
-		{
-			int result;
-			switch (type)
-			{
-				case ShapeType.I:
-				case ShapeType.J:
-				case ShapeType.L:
-					result = 4;
-					break;
-				case ShapeType.O:
-					result = 2;
-					break;
-				default:
-					result = 3;
-					break;
-			}
 			return result;
 		}
 	}

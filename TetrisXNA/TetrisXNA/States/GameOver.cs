@@ -19,82 +19,59 @@
  * THE SOFTWARE.
  */
 
-using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Nuclex.Game.States;
-using TetrisXNA.Components;
-using TetrisXNA.Tetris;
 
 namespace TetrisXNA.States
 {
-	public class MainGame : DrawableGameState
+	internal class GameOver : DrawableGameState
 	{
-		private readonly TetrisClone _game;
+		private const string ScoreFormat = "Your score was {0}!";
 
 		private Texture2D _background;
-		private Texture2D _blockTexture;
 
-		private readonly Vector2 _bgPos = new Vector2(0.0f, 0.0f);
+		private int _score;
+		private Vector2 _scorePos = new Vector2(Constants.GameOverScoreOffsetX, Constants.GameOverScoreOffsetY);
+		private string _scoreString;
 
-		private BlockArea _blockArea;
-		private StatsOverlay _statsOverlay;
+		private readonly TetrisClone _game;
+		private readonly Vector2 _drawPos = new Vector2(0.0f, 0.0f);
 
-		internal MainGame(TetrisClone game)
+		internal GameOver(TetrisClone game)
 		{
 			_game = game;
+		}
+		
+		internal void SetScore(int score)
+		{
+			_score = score;
+			_scoreString = string.Format(ScoreFormat, _score);
+			_scorePos.X = Constants.GameOverScoreOffsetX - (int) _game.GameFont.MeasureString(_scoreString).X / 2;
 		}
 
 		protected override void OnEntered()
 		{
 			if (_background == null)
-				_background = _game.Content.Load<Texture2D>(@"GameBackground");
-
-			if (_blockTexture == null)
-				_blockTexture = _game.Content.Load<Texture2D>(@"block");
-
-			_blockArea = new BlockArea(_blockTexture);
-			_blockArea.UserDrop += OnUserDrop;
-			_blockArea.LineCleared += OnLineClear;
-			_blockArea.GameOver += OnGameOver;
-
-			_statsOverlay = new StatsOverlay(0, _game.GameFont);
+				_background = _game.Content.Load<Texture2D>(@"GameOverBackground");
 		}
 
 		protected override void OnLeaving()
 		{
-			_blockArea.UserDrop -= OnUserDrop;
-			_blockArea.LineCleared -= OnLineClear;
-			_blockArea.GameOver -= OnGameOver;
+			
 		}
 
 		public override void Update(GameTime gameTime)
 		{
-			_blockArea.Update(gameTime);
-			_statsOverlay.Update(gameTime);
+			if (InputHandler.KeyPressed(Keys.Enter))
+				_game.StateManager.Switch(_game.MenuState);
 		}
 
 		public override void Draw(GameTime gameTime)
 		{
-			_game.SpriteBatch.Draw(_background, _bgPos, Color.White);
-			_blockArea.Draw(_game.SpriteBatch);
-			_statsOverlay.Draw(_game.SpriteBatch);
-		}
-
-		private void OnUserDrop(object sender, EventArgs e)
-		{
-			_statsOverlay.AddScore(Constants.UserDropPoints);
-		}
-
-		private void OnLineClear(object sender, EventArgs e)
-		{
-			_statsOverlay.AddScore(Constants.LineClearPoints);
-		}
-
-		private void OnGameOver(object sender, EventArgs e)
-		{
-			_game.GameOverState.SetScore(_statsOverlay.Score);
-			_game.StateManager.Switch(_game.GameOverState);
+			_game.SpriteBatch.Draw(_background, _drawPos, Color.White);
+			_game.SpriteBatch.DrawString(_game.GameFont, _scoreString, _scorePos, Color.Black);
 		}
 	}
 }

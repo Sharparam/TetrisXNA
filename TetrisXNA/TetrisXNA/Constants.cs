@@ -32,5 +32,18 @@ namespace TetrisXNA
 		public const int BlockAreaSizeY = 24;
 		public const int BlockAreaWidth = BlockAreaSizeX * BlockWidth;
 		public const int BlockAreaHeight = BlockAreaSizeY * BlockHeight;
+		public const int BlockAreaNextFieldX = 13;
+		public const int BlockAreaNextFieldY = 3;
+
+		public const int StatsOffsetX = 400;
+		public const int StatsTimeOffsetY = 295;
+		public const int StatsScoreOffsetY = 425;
+		public const int StatsHighScoreOffsetY = 555;
+
+		public const int LineClearPoints = 100;
+		public const int UserDropPoints = 1;
+
+		public const int GameOverScoreOffsetX = 320;
+		public const int GameOverScoreOffsetY = 340;
 	}
 }
