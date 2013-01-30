@@ -41,12 +41,14 @@ namespace TetrisXNA.Tetris
 
 		private readonly Block[,] _blocks;
 		private readonly Texture2D _blockTexture;
+		private readonly Texture2D _ghostBlockTexture;
 
 		private Shape _currentShape;
 		private Block[,] _currentShapeBlocks;
 		private Shape _nextShape;
 		private Block[,] _nextShapeBlocks;
 		private readonly Random _random;
+		private Point _ghostPosition;
 
 		private readonly int[] _shapeTypes;
 		private int _shapeTypeIndex;
@@ -54,10 +56,11 @@ namespace TetrisXNA.Tetris
 		private double _moveTimeElapsed;
 		private bool _gameOver;
 
-		internal BlockArea(Texture2D blockTexture)
+		internal BlockArea(Texture2D blockTexture, Texture2D ghostBlockTexture)
 		{
 			_blocks = new Block[Constants.BlockAreaSizeX,Constants.BlockAreaSizeY];
 			_blockTexture = blockTexture;
+			_ghostBlockTexture = ghostBlockTexture;
 			_moveTimeElapsed = 0.0f;
 			_random = new Random();
 			_shapeTypes = new[] {0, 1, 2, 3, 4, 5, 6};
@@ -192,6 +195,14 @@ namespace TetrisXNA.Tetris
 				if (_currentShape.Rotate(Direction.Right, this))
 					_currentShapeBlocks = _currentShape.GetBlocks();
 
+			// Calculate ghost shape position
+			_ghostPosition = new Point(_currentShape.Position.X, _currentShape.Position.Y);
+			for (int y = _ghostPosition.Y + 1; y < Constants.BlockAreaSizeY; y++)
+				if (_currentShape.IsValidDropPoint(new Point(_ghostPosition.X, y), this))
+					_ghostPosition.Y = y;
+				else
+					break;
+
 			_moveTimeElapsed += gameTime.ElapsedGameTime.TotalSeconds;
 
 			var userDrop = InputHandler.KeyDown(Keys.Down);
@@ -264,15 +275,20 @@ namespace TetrisXNA.Tetris
 					if (_blocks[x, y] != null)
 						spriteBatch.Draw(_blockTexture, GridToScreenCoordinates(x, y), _blocks[x, y].Color);
 
-			// Draw the active shape
-			if (_currentShape != null && _nextShapeBlocks != null)
+			// Draw the active shape and ghost shape
+			if (_currentShape != null && _currentShapeBlocks != null)
 				for (int x = 0; x < _currentShape.Size; x++)
 					for (int y = 0; y < _currentShape.Size; y++)
 						if (_currentShapeBlocks[x, y] != null)
+						{
 							spriteBatch.Draw(_blockTexture,
-								GridToScreenCoordinates(x + _currentShape.Position.X, y + _currentShape.Position.Y),
-								_currentShapeBlocks[x, y].Color);
-			
+							                 GridToScreenCoordinates(x + _currentShape.Position.X, y + _currentShape.Position.Y),
+							                 _currentShapeBlocks[x, y].Color);
+							spriteBatch.Draw(_ghostBlockTexture,
+							                 GridToScreenCoordinates(x + _ghostPosition.X, y + _ghostPosition.Y),
+							                 _currentShapeBlocks[x, y].Color);
+						}
+
 			// Draw the next shape in the upper right
 			if (_nextShape != null && _nextShapeBlocks != null)
 				for (int x = 0; x < _nextShape.Size; x++)

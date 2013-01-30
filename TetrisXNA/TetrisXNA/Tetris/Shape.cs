@@ -39,6 +39,16 @@ namespace TetrisXNA.Tetris
 			Size = ShapeBuilder.GetShapeSize(type);
 		}
 
+		internal bool IsValidDropPoint(Point position, IBlockArea blockArea)
+		{
+			for (int x = 0; x < Size; x++)
+				for (int y = 0; y < Size; y++)
+					if (_blocks[x, y] != null &&
+					    (y + position.Y >= Constants.BlockAreaSizeY || blockArea.IsOccupied(x + position.X, y + position.Y)))
+						return false;
+			return true;
+		}
+
 		internal bool Move(Direction direction, IBlockArea blockArea)
 		{
 			if (direction != Direction.Right && direction != Direction.Left)
@@ -58,11 +68,8 @@ namespace TetrisXNA.Tetris
 		internal bool Drop(IBlockArea blockArea)
 		{
 			var newPos = new Point(Position.X, Position.Y + 1);
-			for (int x = 0; x < Size; x++)
-				for (int y = 0; y < Size; y++)
-					if (_blocks[x, y] != null &&
-						(y + newPos.Y >= Constants.BlockAreaSizeY || blockArea.IsOccupied(x + newPos.X, y + newPos.Y)))
-						return false;
+			if (!IsValidDropPoint(newPos, blockArea))
+				return false;
 			Position = new Point(newPos.X, newPos.Y);
 			return true;
 		}

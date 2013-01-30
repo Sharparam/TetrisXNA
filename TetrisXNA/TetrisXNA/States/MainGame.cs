@@ -38,6 +38,7 @@ namespace TetrisXNA.States
 
 		private Texture2D _background;
 		private Texture2D _blockTexture;
+		private Texture2D _ghostBlockTexture;
 		private Texture2D _gameOverOverlay;
 
 		private readonly Vector2 _bgPos = new Vector2(0.0f, 0.0f);
@@ -61,10 +62,13 @@ namespace TetrisXNA.States
 			if (_blockTexture == null)
 				_blockTexture = _game.Content.Load<Texture2D>(@"block");
 
+			if (_ghostBlockTexture == null)
+				_ghostBlockTexture = _game.Content.Load<Texture2D>(@"GhostBlock");
+
 			if (_gameOverOverlay == null)
 				_gameOverOverlay = _game.Content.Load<Texture2D>(@"GameOverBackground");
 
-			_blockArea = new BlockArea(_blockTexture);
+			_blockArea = new BlockArea(_blockTexture, _ghostBlockTexture);
 			_blockArea.UserDrop += OnUserDrop;
 			_blockArea.LineCleared += OnLineClear;
 			_blockArea.GameOver += OnGameOver;
